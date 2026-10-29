@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cutlist Converter</title>
+<meta name="description" content="Turn a CabinetSense cutlist into a CWorkshop cutting list.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<header class="bar"><div class="wrap">
+  <h1>Cutlist Converter</h1>
+  <span class="job" id="job"></span>
+  <span class="spacer"></span>
+  <label class="btn" for="file">Open CSV</label>
+  <input type="file" id="file" accept=".csv,text/csv" hidden>
+  <button class="btn primary" id="dlBtn" type="button" disabled>Download for CWorkshop</button>
+</div></header>
+
+<main class="wrap" id="main">
+  <section class="empty" id="empty">
+    <div class="drop" id="drop">
+      <p class="drop-title">Drop a CabinetSense cutlist CSV here</p>
+      <p class="hint">Export from CabinetSense as CutList Plus CSV, then drop the file in. Nothing is uploaded: the file stays in your browser.</p>
+      <label class="btn primary" for="file">Choose file</label>
+    </div>
+    <ol class="how">
+      <li><strong>Match boards</strong> to the CWorkshop catalogue. Matches are remembered.</li>
+      <li><strong>Check edges.</strong> Tape is suggested from the board and your CabinetSense edge letters. Fix any part, or many at once.</li>
+      <li><strong>Download</strong> the .xlsx and upload it to your CWorkshop order.</li>
+    </ol>
+  </section>
+
+  <div id="work" hidden>
+    <div class="summary" id="summary"></div>
+
+    <section id="secMat">
+      <div class="step"><span class="n">1</span><h2>Boards</h2><span class="hint" id="matHint"></span></div>
+      <div class="tablebox"><table class="t-mat">
+        <thead><tr><th>Order</th><th>CabinetSense material</th><th class="num">Thk</th><th class="num">Parts</th><th class="wide">CWorkshop board</th></tr></thead>
+        <tbody id="matBody"></tbody>
+      </table></div>
+    </section>
+
+    <section id="secEdge">
+      <div class="step"><span class="n">2</span><h2>Edge tape</h2><span class="hint">What each CabinetSense edge letter means on each board. X (scribe) defaults to no tape.</span></div>
+      <div class="tablebox"><table class="t-edge">
+        <thead><tr><th>Board</th><th>Letter</th><th class="num">Edges</th><th class="wide">Tape</th></tr></thead>
+        <tbody id="edgeBody"></tbody>
+      </table></div>
+    </section>
+
+    <section id="secChecks">
+      <div class="step"><span class="n">3</span><h2>Checks</h2><span class="hint" id="checkHint"></span></div>
+      <ul class="issues" id="issues"></ul>
+    </section>
+
+    <section id="secParts">
+      <div class="step"><span class="n">4</span><h2>Parts</h2><span class="hint">Click an edge to change it. Tick parts to change many at once.</span></div>
+      <div class="legend">
+        <span><i class="sw sw-suggest"></i>Suggested</span>
+        <span><i class="sw sw-rule"></i>From your edge rules</span>
+        <span><i class="sw sw-edit"></i>Changed here</span>
+        <span>Small letter = CabinetSense edge code</span>
+      </div>
+      <div class="tablebox"><table class="t-parts">
+        <thead><tr>
+          <th class="chk"><input type="checkbox" id="selAll" aria-label="Select all parts"></th>
+          <th>Part</th><th>Board</th><th class="num">Thk</th><th class="num">Length</th><th class="num">Width</th><th class="num">Qty</th>
+          <th class="edge">L1</th><th class="edge">L2</th><th class="edge">W1</th><th class="edge">W2</th><th></th>
+        </tr></thead>
+        <tbody id="partBody"></tbody>
+      </table></div>
+    </section>
+  </div>
+
+  <footer class="foot"><span id="catStatus">Loading CWorkshop catalogue…</span></footer>
+</main>
+
+<div class="bulk" id="bulk" hidden><div class="wrap bulk-in">
+  <strong id="bulkCount"></strong>
+  <div class="bulk-group">
+    <span class="bulk-label">Edges</span>
+    <label class="tog"><input type="checkbox" id="bkL1" checked>L1</label>
+    <label class="tog"><input type="checkbox" id="bkL2">L2</label>
+    <label class="tog"><input type="checkbox" id="bkW1">W1</label>
+    <label class="tog"><input type="checkbox" id="bkW2">W2</label>
+    <select id="bkTape" aria-label="Tape"></select>
+    <button class="btn" id="bkSetEdges" type="button">Set</button>
+  </div>
+  <div class="bulk-group">
+    <span class="bulk-label">Board</span>
+    <input type="text" id="bkBoard" list="catList" placeholder="Search code or name" aria-label="New board">
+    <button class="btn" id="bkSetBoard" type="button">Change</button>
+  </div>
+  <div class="bulk-group">
+    <button class="btn" id="bkNone" type="button">No banding is right</button>
+    <button class="btn" id="bkReset" type="button">Reset to CSV</button>
+    <button class="btn ghost" id="bkClear" type="button">Clear selection</button>
+  </div>
+</div></div>
+
+<datalist id="catList"></datalist>
+<div class="toast" id="toast" hidden></div>
+</body>
+</html>

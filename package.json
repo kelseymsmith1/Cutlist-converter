@@ -1,0 +1,6 @@
+{
+  "name": "cutlist-converter",
+  "private": true,
+  "type": "module",
+  "description": "Turns CabinetSense cutlist CSVs into CWorkshop cutting-list uploads."
+}
